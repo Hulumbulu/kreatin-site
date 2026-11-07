@@ -1,0 +1,17 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Креатин сайт</title><style>html,body,iframe{margin:0;width:100%;height:100%;border:0}body{background:#100b0c;color:#f6eeeb;font:16px system-ui}p{margin:2rem}iframe{display:block}</style><body><p role="status">Открываем сайт…</p><script>
+async function openSite() {
+  const fragment = location.hash.slice(1);
+  if (!/^[a-f0-9]{64}$/.test(fragment)) throw new Error();
+  const bytes = Uint8Array.from(fragment.match(/../g), part => parseInt(part,16));
+  const key = await crypto.subtle.importKey('raw',bytes,'AES-GCM',false,['decrypt']);
+  const response = await fetch('./preview.bin');
+  if (!response.ok) throw new Error();
+  const data = new Uint8Array(await response.arrayBuffer());
+  const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:data.slice(0,12)},key,data.slice(12));
+  const frame = document.createElement('iframe');
+  frame.title = 'Креатин сайт';
+  frame.src = URL.createObjectURL(new Blob([plain],{type:'text/html;charset=utf-8'}));
+  document.body.replaceChildren(frame);
+}
+openSite().catch(()=>document.querySelector('p').textContent='Для просмотра откройте полную ссылку из приватного репозитория.');
+</script></html>
