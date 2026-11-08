@@ -4,14 +4,16 @@ async function openSite() {
   if (!/^[a-f0-9]{64}$/.test(fragment)) throw new Error();
   const bytes = Uint8Array.from(fragment.match(/../g), part => parseInt(part,16));
   const key = await crypto.subtle.importKey('raw',bytes,'AES-GCM',false,['decrypt']);
-  const response = await fetch('./preview.bin?v=2a78458');
+  const response = await fetch('./preview.bin?v=c9fff91');
   if (!response.ok) throw new Error();
   const data = new Uint8Array(await response.arrayBuffer());
   const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:data.slice(0,12)},key,data.slice(12));
   const frame = document.createElement('iframe');
   frame.title = 'Креатин сайт';
   frame.src = URL.createObjectURL(new Blob([plain],{type:'text/html;charset=utf-8'}));
+  document.title = 'Дуга — Контур Mono';
   document.body.replaceChildren(frame);
 }
 openSite().catch(()=>document.querySelector('p').textContent='Для просмотра откройте полную ссылку из приватного репозитория.');
 </script></html>
+
