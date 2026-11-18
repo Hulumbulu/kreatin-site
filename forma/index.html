@@ -2,7 +2,7 @@
 (async()=>{
  const fragment=location.hash.slice(1);if(!/^[a-f0-9]{64}$/.test(fragment))throw Error('key');
  const bytes=Uint8Array.from(fragment.match(/../g),v=>parseInt(v,16));const key=await crypto.subtle.importKey('raw',bytes,'AES-GCM',false,['decrypt']);
- const response=await fetch('./preview.bin?v=40e78dfe5363961e');if(!response.ok)throw Error('download');const data=new Uint8Array(await response.arrayBuffer());
+ const response=await fetch('./preview.bin?v=685b6d87fc296e6f');if(!response.ok)throw Error('download');const data=new Uint8Array(await response.arrayBuffer());
  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:data.slice(0,12)},key,data.slice(12));const bundle=JSON.parse(await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
  const urls={};for(const [name,file] of Object.entries(bundle.images)){const bytes=Uint8Array.from(atob(file.base64),c=>c.charCodeAt(0));urls[name]=URL.createObjectURL(new Blob([bytes],{type:file.mime}));}window.formaAssets=urls;
  window.formaNavigate=href=>{const target=new URL(href,'https://forma.local/'),url=new URL(location.href);url.search=target.search;url.searchParams.set('page',(['catalog','interiors','help'].find(name=>target.pathname.endsWith(name+'.html'))||'home'));if(target.hash)url.searchParams.set('section',target.hash.slice(1));location.href=url.href;};
